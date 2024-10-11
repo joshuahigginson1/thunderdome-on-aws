@@ -102,10 +102,16 @@ variable "initial_database_name" {
 
 variable "database_engine" {
   type        = string
-  description = "The underlying database engine which backs RDS Aurora Serverless v2. Either 'postgresql' or 'mysql'. Defaults to 'postgres'."
+  description = "(Required) The underlying database engine which backs RDS Aurora Serverless v2. Either 'postgresql' or 'mysql'."
 
   validation {
     condition     = contains(["postgresql", "mysql"], var.database_engine)
     error_message = "The two valid values for database_engine are either 'postgresql' or 'mysql'."
   }
+}
+
+variable "disable_rds_data_endpoint" {
+  type        = bool
+  default     = false
+  description = "Optionally disables the useful RDS Data Endpoint, used to perform database actions from the AWS Console or CLI itself. Defaults to false."
 }

@@ -1,8 +1,22 @@
 module "vpc" {
-  source         = "./modules/simple-vpc"
-  project_prefix = local.project_prefix
-  max_subnets    = 3
+  source = "./modules/simple-vpc"
 
+  max_subnets = 3
+
+  project_prefix = local.project_prefix
+}
+
+module "rds" {
+  source = "./modules/rds"
+
+  initial_database_name = "thunderdome"
+  database_engine       = "postgresql"
+
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnet_ids
+
+  deletion_protection = var.deletion_protection
+  project_prefix      = local.project_prefix
 }
 
 module "thunderdome_server" {

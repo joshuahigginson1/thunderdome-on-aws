@@ -59,6 +59,8 @@ resource "aws_rds_cluster" "rds_cluster" {
 
   apply_immediately            = !var.deletion_protection
   preferred_maintenance_window = "wed:04:00-wed:04:30"
+
+  enable_http_endpoint = !var.disable_rds_data_endpoint
 }
 
 
@@ -87,10 +89,10 @@ resource "aws_rds_cluster_instance" "rds_instance" {
   #   Backups and Monitoring   #
   # -------------------------- #
 
-  performance_insights_enabled = true
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
 
-  # TODO: Configure valid RDS monitoring role.
-  #   monitoring_interval = 60
-  #   monitoring_role_arn = aws_iam_role.rds_monitoring_role.arn
+  monitoring_interval = 60
+  monitoring_role_arn = aws_iam_role.rds_monitoring_role.arn
 
 }
