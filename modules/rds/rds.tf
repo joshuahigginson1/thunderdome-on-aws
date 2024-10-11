@@ -53,7 +53,6 @@ resource "aws_rds_cluster" "rds_cluster" {
   delete_automated_backups = !var.deletion_protection
   skip_final_snapshot      = var.deletion_protection
 
-
   # -------------------- #
   #   Database Changes   #
   # -------------------- #
@@ -83,7 +82,6 @@ resource "aws_rds_cluster_instance" "rds_instance" {
 
   publicly_accessible = false
   ca_cert_identifier  = "rds-ca-ecc384-g1"
-
 
   # -------------------------- #
   #   Backups and Monitoring   #
