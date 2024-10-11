@@ -84,7 +84,7 @@ variable "ecs_cluster_arn" {
   description = "(Required) The ARN of the ECS Cluster in which to deploy our ECS service and containers to."
 
   validation {
-    condition     = can(regex("^arn:*:ecs:*:[0-9]{12}:cluster/*", var.ecs_cluster_arn))
+    condition     = can(regex("^arn:aws:ecs:[a-z0-9-]+:[0-9]{12}:cluster/[a-zA-Z0-9-_]+$", var.ecs_cluster_arn))
     error_message = "Invalid ARN for ecs_cluster_arn. It should look something like: arn:<Your AWS Partition>:ecs:<AWS Region>:<Account ID>:cluster/<Cluster Name>"
   }
 }
@@ -99,8 +99,8 @@ variable "database_secret_arn" {
   description = "(Required) The ARN of a Secret in AWS Secrets Manager, containing the Administrator Username and Password for the PostGres Database. Keys must be explicitly titled 'username' and 'password'."
 
   validation {
-    condition     = can(regex("^arn:*:secretsmanager:*:[0-9]{12}:secret/*", var.database_secret_arn))
-    error_message = "Invalid ARN for rds_secret_arn. It should look something like: arn:<Your AWS Partition>:secretsmanager:<AWS Region>:<Account ID>:secret/<Secret Name>"
+    condition     = can(regex("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[a-zA-Z0-9\\-_/!]+$", var.database_secret_arn))
+    error_message = "Invalid ARN for rds_secret_arn. It should look something like: arn:<Your AWS Partition>:secretsmanager:<AWS Region>:<Account ID>:secret:<Secret Name>"
   }
 }
 

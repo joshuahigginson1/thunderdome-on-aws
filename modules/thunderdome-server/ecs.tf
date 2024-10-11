@@ -102,18 +102,19 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       # -------------------- #
 
       # I generally like to override the original entrypoint of any container to allow for better customisation and flexibility.
+      # NB: Current container has no shell.
 
-      entryPoint = [
-        "sh",
-        "-c"
-      ]
+      # entryPoint = [
+      #   "sh",
+      #   "-c"
+      # ]
 
-      command = [
-        <<-EOF
-        echo "Starting the Thunderdome..."
-        /go/bin/thunderdome
-        EOF
-      ]
+      # command = [
+      #   <<-EOF
+      #   echo "Starting the Thunderdome..."
+      #   /go/bin/thunderdome
+      #   EOF
+      # ]
 
       portMappings = [
         {
@@ -122,13 +123,13 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         }
       ]
 
-      healthCheck = {
-        command = [
-          "CMD-SHELL",
-          "curl -f http://0.0.0.0:8080/ || exit 1"
-        ],
-        startPeriod = 30
-      } # TODO: Rubbish Healthcheck, replace.
+      # healthCheck = {
+      #   command = [
+      #     "CMD-SHELL",
+      #     "curl -f http://0.0.0.0:8080/ || exit 1"
+      #   ],
+      #   startPeriod = 30
+      # } # TODO: Rubbish Healthcheck, replace. NB: Current container has no shell.
 
       logConfiguration = {
         logDriver = "awslogs"
