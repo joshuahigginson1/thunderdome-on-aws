@@ -74,6 +74,23 @@ variable "private_subnet_ids" {
   }
 }
 
+variable "public_subnet_ids" {
+  description = "(Required) A list of subnet_ids, corresponding to Public Subnets within the VPC defined in the variable 'vpc_id'. Double-check that each provided subnet_id is in a unique availability zone, this is not something that Terraform can easily validate."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.public_subnet_ids) > 1
+    error_message = "At least two subnet_ids must be provided in the list of public_subnet_ids, to automatically recover from AZ failover."
+  }
+
+  validation {
+    condition = alltrue([
+      for id in var.public_subnet_ids : can(regex("^subnet-", id))
+    ])
+    error_message = "There is an invalid subnet_id within the list of provided public_subnet_ids."
+  }
+}
+
 
 # ======= #
 #   ECS   #
@@ -137,4 +154,13 @@ variable "database_access_security_group_id" {
     condition     = can(regex("^sg-[a-z0-9]{8,}$", var.database_access_security_group_id))
     error_message = "Invalid Security Group ID. It must start with 'sg-' followed by at least 8 alphanumeric characters."
   }
+}
+
+# ============================= #
+#   Thunderdome Configuration   #
+# ============================= #
+
+variable "thunderdome_administrator_email" {
+  type        = string
+  description = "(Required) The email address of the initial user, to be assigned as the Thunderdome Administrator."
 }

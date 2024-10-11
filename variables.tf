@@ -24,3 +24,12 @@ Please review and adjust this setting as needed for your specific use case.
 EOT
   }
 }
+
+# ============================= #
+#   Thunderdome Configuration   #
+# ============================= #
+
+variable "thunderdome_administrator_email" {
+  type        = string
+  description = "(Required) The email address of the initial user, to be assigned as the Thunderdome Administrator."
+}

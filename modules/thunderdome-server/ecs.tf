@@ -23,11 +23,11 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   # NB: You will want to edit these values if using this repository as a template.
-  # load_balancer {
-  #   target_group_arn = aws_lb_target_group.target_group.arn
-  #   container_name   = "main-container"
-  #   container_port   = 8080
-  # }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.application_target_group.arn
+    container_name   = "thunderdome-server"
+    container_port   = 8080
+  }
 }
 
 
@@ -84,6 +84,14 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       # Config found here: https://github.com/StevenWeathers/thunderdome-planning-poker/blob/main/docs/CONFIGURATION.md
       environment = [
         {
+          name  = "ADMIN_EMAIL",
+          value = "${var.thunderdome_administrator_email}"
+        },
+        {
+          name  = "SMTP_ENABLED",
+          value = "false"  # Disable SMTP, currently not configured.
+        },
+        {
           name  = "DB_NAME",
           value = "${var.database_name}"
         },
@@ -102,7 +110,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       # -------------------- #
 
       # I generally like to override the original entrypoint of any container to allow for better customisation and flexibility.
-      # NB: Current container has no shell.
+      # NB: Current container has no shell, so we can't run healthchecks or command overrides.
 
       # entryPoint = [
       #   "sh",
@@ -129,7 +137,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       #     "curl -f http://0.0.0.0:8080/ || exit 1"
       #   ],
       #   startPeriod = 30
-      # } # TODO: Rubbish Healthcheck, replace. NB: Current container has no shell.
+      # } NB: Current container has no shell.
 
       logConfiguration = {
         logDriver = "awslogs"

@@ -23,6 +23,7 @@ module "thunderdome_server" {
   source = "./modules/thunderdome-server"
 
   vpc_id             = module.vpc.vpc_id
+  public_subnet_ids  = module.vpc.public_subnet_ids
   private_subnet_ids = module.vpc.private_subnet_ids
 
   ecs_cluster_arn = aws_ecs_cluster.ecs_cluster.arn
@@ -31,6 +32,8 @@ module "thunderdome_server" {
   database_endpoint                 = module.rds.rds_database_endpoint
   database_secret_arn               = module.rds.rds_secret_arn
   database_access_security_group_id = module.rds.rds_access_security_group_id
+
+  thunderdome_administrator_email = var.thunderdome_administrator_email
 
   deletion_protection = var.deletion_protection
   project_prefix      = local.project_prefix
