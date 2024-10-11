@@ -31,7 +31,6 @@ resource "aws_ecs_service" "ecs_service" {
 }
 
 
-
 # ======================= #
 #   ECS Task Definition   #
 # ======================= #

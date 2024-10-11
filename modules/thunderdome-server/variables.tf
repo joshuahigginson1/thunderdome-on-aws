@@ -21,7 +21,7 @@ variable "project_prefix" {
   description = "(Required) The name of the project or application, used as the prefix for resource names created in AWS. Partially for my ease of use, to improve the re-usability of this deployment pattern."
 
   validation {
-    condition     = can(regex("^[a-z0-9-]+$", var.project_name))
+    condition     = can(regex("^[a-z0-9-]+$", var.project_prefix))
     error_message = "The project prefix must consist of lowercase letters, numbers, and hyphens only. Use Terraform transformations at the resource layer to improve readability at the Resource level."
   }
 
