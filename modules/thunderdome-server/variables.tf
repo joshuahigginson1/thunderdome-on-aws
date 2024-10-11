@@ -74,6 +74,24 @@ variable "private_subnet_ids" {
   }
 }
 
+variable "public_subnet_ids" {
+  description = "(Required) A list of subnet_ids, corresponding to Public Subnets within the VPC defined in the variable 'vpc_id'. Double-check that each provided subnet_id is in a unique availability zone, this is not something that Terraform can easily validate."
+  type        = list(string)
+
+  validation {
+    condition     = length(var.public_subnet_ids) > 1
+    error_message = "At least two subnet_ids must be provided in the list of public_subnet_ids, to automatically recover from AZ failover."
+  }
+
+  validation {
+    condition = alltrue([
+      for id in var.public_subnet_ids : can(regex("^subnet-", id))
+    ])
+    error_message = "There is an invalid subnet_id within the list of provided public_subnet_ids."
+  }
+}
+
+
 # ======= #
 #   ECS   #
 # ======= #
@@ -83,7 +101,66 @@ variable "ecs_cluster_arn" {
   description = "(Required) The ARN of the ECS Cluster in which to deploy our ECS service and containers to."
 
   validation {
-    condition     = can(regex("^arn:*:ecs:*:[0-9]{12}:cluster/*", var.ecs_cluster_arn))
+    condition     = can(regex("^arn:aws:ecs:[a-z0-9-]+:[0-9]{12}:cluster/[a-zA-Z0-9-_]+$", var.ecs_cluster_arn))
     error_message = "Invalid ARN for ecs_cluster_arn. It should look something like: arn:<Your AWS Partition>:ecs:<AWS Region>:<Account ID>:cluster/<Cluster Name>"
   }
+}
+
+
+# ======= #
+#   RDS   #
+# ======= #
+
+variable "database_secret_arn" {
+  type        = string
+  description = "(Required) The ARN of a Secret in AWS Secrets Manager, containing the Administrator Username and Password for the PostGres Database. Keys must be explicitly titled 'username' and 'password'."
+
+  validation {
+    condition     = can(regex("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[a-zA-Z0-9\\-_/!]+$", var.database_secret_arn))
+    error_message = "Invalid ARN for rds_secret_arn. It should look something like: arn:<Your AWS Partition>:secretsmanager:<AWS Region>:<Account ID>:secret:<Secret Name>"
+  }
+}
+
+variable "database_name" {
+  description = "(Required) The PostGres database name configured for the application."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z_]+$", var.database_name))
+    error_message = "The database name must only contain lowercase letters and underscores, conforming to lower_camel_case style."
+  }
+
+  validation {
+    condition     = length(var.database_name) > 2
+    error_message = "Your database name should really exceed two characters in length..."
+  }
+
+  validation {
+    condition     = length(var.database_name) <= 63
+    error_message = "The initial database name must not exceed 63 characters, which is the maximum length for both PostgreSQL and MySQL hosted on AWS."
+  }
+}
+
+variable "database_endpoint" {
+  type        = string
+  description = "(Required) The DNS name at which the RDS database is accessible from inside of the deployed VPC."
+}
+
+variable "database_access_security_group_id" {
+  type        = string
+  description = "(Required) The Security Group ID, required for access to the PostGres Database."
+
+  validation {
+    condition     = can(regex("^sg-[a-z0-9]{8,}$", var.database_access_security_group_id))
+    error_message = "Invalid Security Group ID. It must start with 'sg-' followed by at least 8 alphanumeric characters."
+  }
+}
+
+# ============================= #
+#   Thunderdome Configuration   #
+# ============================= #
+
+variable "thunderdome_administrator_email" {
+  type        = string
+  description = "(Required) The email address of the initial user, to be assigned as the Thunderdome Administrator."
 }
