@@ -10,6 +10,15 @@ resource "aws_security_group" "container_security_group" {
 
 # NB: If using this repository as a template, you will want to add any port in which you would like exposed to the load balancer below. Copy and paste the below resource for as many ports as you need.
 
+resource "aws_security_group_rule" "container_to_internet_egress" {
+  security_group_id = aws_security_group.container_security_group.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "lb_to_container_ingress" {
   security_group_id        = aws_security_group.container_security_group.id
   type                     = "ingress"

@@ -94,5 +94,4 @@ resource "aws_rds_cluster_instance" "rds_instance" {
 
   monitoring_interval = 60
   monitoring_role_arn = aws_iam_role.rds_monitoring_role.arn
-
 }

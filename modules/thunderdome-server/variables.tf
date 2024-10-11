@@ -74,6 +74,7 @@ variable "private_subnet_ids" {
   }
 }
 
+
 # ======= #
 #   ECS   #
 # ======= #
@@ -85,5 +86,55 @@ variable "ecs_cluster_arn" {
   validation {
     condition     = can(regex("^arn:*:ecs:*:[0-9]{12}:cluster/*", var.ecs_cluster_arn))
     error_message = "Invalid ARN for ecs_cluster_arn. It should look something like: arn:<Your AWS Partition>:ecs:<AWS Region>:<Account ID>:cluster/<Cluster Name>"
+  }
+}
+
+
+# ======= #
+#   RDS   #
+# ======= #
+
+variable "database_secret_arn" {
+  type        = string
+  description = "(Required) The ARN of a Secret in AWS Secrets Manager, containing the Administrator Username and Password for the PostGres Database. Keys must be explicitly titled 'username' and 'password'."
+
+  validation {
+    condition     = can(regex("^arn:*:secretsmanager:*:[0-9]{12}:secret/*", var.database_secret_arn))
+    error_message = "Invalid ARN for rds_secret_arn. It should look something like: arn:<Your AWS Partition>:secretsmanager:<AWS Region>:<Account ID>:secret/<Secret Name>"
+  }
+}
+
+variable "database_name" {
+  description = "(Required) The PostGres database name configured for the application."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z_]+$", var.database_name))
+    error_message = "The database name must only contain lowercase letters and underscores, conforming to lower_camel_case style."
+  }
+
+  validation {
+    condition     = length(var.database_name) > 2
+    error_message = "Your database name should really exceed two characters in length..."
+  }
+
+  validation {
+    condition     = length(var.database_name) <= 63
+    error_message = "The initial database name must not exceed 63 characters, which is the maximum length for both PostgreSQL and MySQL hosted on AWS."
+  }
+}
+
+variable "database_endpoint" {
+  type        = string
+  description = "(Required) The DNS name at which the RDS database is accessible from inside of the deployed VPC."
+}
+
+variable "database_access_security_group_id" {
+  type        = string
+  description = "(Required) The Security Group ID, required for access to the PostGres Database."
+
+  validation {
+    condition     = can(regex("^sg-[a-z0-9]{8,}$", var.database_access_security_group_id))
+    error_message = "Invalid Security Group ID. It must start with 'sg-' followed by at least 8 alphanumeric characters."
   }
 }

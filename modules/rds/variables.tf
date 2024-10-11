@@ -80,7 +80,7 @@ variable "private_subnet_ids" {
 # ====================== #
 
 variable "initial_database_name" {
-  description = "(Required) The name of the first 'database' name, as defined in either PostGres or MySQL."
+  description = "(Required) The name assigned to the first automatically created 'database' object, as defined in either PostGres or MySQL."
   type        = string
 
   validation {

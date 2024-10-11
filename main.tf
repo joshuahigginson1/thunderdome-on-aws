@@ -27,6 +27,11 @@ module "thunderdome_server" {
 
   ecs_cluster_arn = aws_ecs_cluster.ecs_cluster.arn
 
+  database_name                     = module.rds.rds_initial_database_name
+  database_endpoint                 = module.rds.rds_database_endpoint
+  database_secret_arn               = module.rds.rds_secret_arn
+  database_access_security_group_id = module.rds.rds_access_security_group_id
+
   deletion_protection = var.deletion_protection
   project_prefix      = local.project_prefix
 }
