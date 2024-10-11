@@ -51,7 +51,7 @@ resource "aws_rds_cluster" "rds_cluster" {
   copy_tags_to_snapshot   = true
 
   delete_automated_backups = !var.deletion_protection
-  skip_final_snapshot      = var.deletion_protection
+  skip_final_snapshot      = !var.deletion_protection
 
   # -------------------- #
   #   Database Changes   #
