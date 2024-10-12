@@ -89,7 +89,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         },
         {
           name  = "SMTP_ENABLED",
-          value = "false"  # Disable SMTP, currently not configured.
+          value = "false" # Disable SMTP, currently not configured.
         },
         {
           name  = "DB_NAME",

@@ -100,6 +100,7 @@ variable "ecs_cluster_arn" {
   type        = string
   description = "(Required) The ARN of the ECS Cluster in which to deploy our ECS service and containers to."
 
+  # TODO: Tweak this regex to allow for different AWS partitions.
   validation {
     condition     = can(regex("^arn:aws:ecs:[a-z0-9-]+:[0-9]{12}:cluster/[a-zA-Z0-9-_]+$", var.ecs_cluster_arn))
     error_message = "Invalid ARN for ecs_cluster_arn. It should look something like: arn:<Your AWS Partition>:ecs:<AWS Region>:<Account ID>:cluster/<Cluster Name>"
@@ -116,6 +117,7 @@ variable "database_secret_arn" {
   description = "(Required) The ARN of a Secret in AWS Secrets Manager, containing the Administrator Username and Password for the PostGres Database. Keys must be explicitly titled 'username' and 'password'."
 
   validation {
+    # TODO: Tweak this regex to allow for different AWS partitions.
     condition     = can(regex("^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[a-zA-Z0-9\\-_/!]+$", var.database_secret_arn))
     error_message = "Invalid ARN for rds_secret_arn. It should look something like: arn:<Your AWS Partition>:secretsmanager:<AWS Region>:<Account ID>:secret:<Secret Name>"
   }
@@ -163,4 +165,20 @@ variable "database_access_security_group_id" {
 variable "thunderdome_administrator_email" {
   type        = string
   description = "(Required) The email address of the initial user, to be assigned as the Thunderdome Administrator."
+}
+
+
+# ========================== #
+#   Route 53 Configuration   #
+# ========================== #
+
+variable "load_balancer_certificate_arn" {
+  type        = string
+  description = "(Required) the ARN to the HTTPS Certificate required for securing our Load Balancer Listener, stored within AWS Certificate Manager. Must be created manually."
+
+  validation {
+    # TODO: Tweak this regex to allow for different AWS partitions.
+    condition     = can(regex("^arn:aws:acm::[0-9]{12}:certificate/[a-zA-Z0-9-_/]+$", var.load_balancer_certificate_arn))
+    error_message = "Invalid certificate ARN provided. It should be an ACM certificate ARN (arn:<Your AWS Partition>:acm::<Account ID>:certificate/<Secret Name>)."
+  }
 }

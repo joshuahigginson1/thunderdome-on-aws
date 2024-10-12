@@ -13,6 +13,9 @@ resource "aws_lb" "public_alb" {
 
   enable_deletion_protection = var.deletion_protection
 
+  enable_http2                     = true
+  enable_cross_zone_load_balancing = true
+
   tags = {
     Name = "${var.project_prefix}-public-alb"
   }
@@ -25,8 +28,11 @@ resource "aws_lb" "public_alb" {
 
 resource "aws_lb_listener" "application_listener" {
   load_balancer_arn = aws_lb.public_alb.arn
-  port              = "80" # TODO: Configure HTTPS.
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+
+  ssl_policy      = "ELBSecurityPolicy-2016-08"
+  certificate_arn = var.load_balancer_certificate_arn
 
   default_action {
     type             = "forward"
