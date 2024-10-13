@@ -33,3 +33,13 @@ variable "thunderdome_administrator_email" {
   type        = string
   description = "(Required) The email address of the initial user, to be assigned as the Thunderdome Administrator."
 }
+
+
+# ========================== #
+#   Route 53 Configuration   #
+# ========================== #
+
+variable "hosted_zone_id" {
+  type        = string
+  description = "(Required) The Hosted Zone ID for the Hosted Zone to which the application's DNS will be added to."
+}

@@ -37,4 +37,6 @@ module "thunderdome_server" {
 
   deletion_protection = var.deletion_protection
   project_prefix      = local.project_prefix
+
+  hosted_zone_id = var.hosted_zone_id
 }
