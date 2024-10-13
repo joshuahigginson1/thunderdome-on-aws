@@ -16,7 +16,7 @@ output "alb_security_group_id" {
 
 # Custom Outputs often change from deployment to deployment, and warrant editing.
 
-# output "thunderdome_server_target_group_arn" {
-#   description = "The ARN of the Target Group assigned to Thunderdome Server containers deployed to ECS Fargate."
-#   value       = aws_lb_target_group.thunderdome_server_target_group.arn
-# }
+output "server_fqdn" {
+  description = "The fully qualified domain name at which Thunderdome is now hosted at."
+  value       = aws_route53_record.application_entry.fqdn
+}

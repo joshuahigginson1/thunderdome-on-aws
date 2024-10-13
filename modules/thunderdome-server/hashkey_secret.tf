@@ -20,7 +20,7 @@ resource "random_password" "aes_hashkey" {
 # =================== #
 
 resource "aws_secretsmanager_secret" "hashkey_secret" {
-  name_prefix        = "${var.project_prefix}-hashkey-secret"
+  name_prefix = "${var.project_prefix}-hashkey-secret"
   description = "An AWS Secrets Manager Secret, storing the Hashkey secrets for Thunderdome."
 
   recovery_window_in_days = var.deletion_protection ? 30 : 0
