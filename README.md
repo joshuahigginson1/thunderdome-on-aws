@@ -18,16 +18,17 @@ _Deployment created by Joshua Higginson_
 
 ## Contents
 
-- [Project Brief](#project-brief)
-  - [Resources](#resources)
-  - [Requirements](#requirements)
-- [Project Architecture](#project-architecture)
-  - [Database Structure](#database-structure)
-  - [CI Pipeline](#ci-pipeline)
-- [Project Management](#project-management)
-- [Project Review](#project-review)
-  - [Known Issues and Future Optimisation](#known-issues-and-future-optimisations)
-- [Authors](#authors)
+- [Thunderdome on AWS ECS](#thunderdome-on-aws-ecs)
+  - [Contents](#contents)
+  - [Project Brief](#project-brief)
+    - [Resources](#resources)
+    - [Requirements](#requirements)
+  - [Quickstart](#quickstart)
+  - [Project Architecture](#project-architecture)
+    - [CI Pipeline](#ci-pipeline)
+  - [Project Review](#project-review)
+    - [Known Issues and Future Optimisations](#known-issues-and-future-optimisations)
+  - [Authors](#authors)
 
 ## Project Brief
 
@@ -56,7 +57,7 @@ To deploy this application, you will need:
 
 - A [Route 53 Public Hosted Zone][4] (Write a ticket, and I'll add Private Zone integration.) and a corresponding Domain Name, [registered in AWS][5].
 
-> **Warning**<br>
+> ⚠️ **Warning**<br>
 If you don't have a Domain Name registered in AWS, or if you're using Private ACM, you'll be paying through the teeth for a certificate with this deployment. You have been warned!
 
 - Terraform CLI, and AWS CLI v2.
