@@ -85,9 +85,9 @@ If you don't have a Domain Name registered in AWS, or if you're using Private AC
 
 ## Project Architecture
 
-TO WRITE: Diagram.
+*TO WRITE*: Diagram.
 
-TO WRITE: Costs associated.
+*TO WRITE*: Costs associated.
 
 
 ### CI Pipeline
