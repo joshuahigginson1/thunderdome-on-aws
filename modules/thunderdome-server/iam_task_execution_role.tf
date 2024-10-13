@@ -13,7 +13,7 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
   name                = "${var.project_prefix}-ecs-task-execution-role"
   description         = "The Task Execution Role required for applications running on ECS to perform AWS API Actions."
-  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy", aws_iam_policy.database_secret_arn_access.arn]
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy", aws_iam_policy.secret_access.arn]
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -29,9 +29,10 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
-resource "aws_iam_policy" "database_secret_arn_access" {
-  name        = "${var.project_prefix}-database-secret-arn-access"
-  description = "The IAM Policy required for retrieving the Database Secret from Secrets Manager."
+
+resource "aws_iam_policy" "secret_access" {
+  name        = "${var.project_prefix}-secret-access"
+  description = "The IAM Policy required for retrieving the Database, OIDC, and Hashkey Secrets from Secrets Manager."
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -42,7 +43,10 @@ resource "aws_iam_policy" "database_secret_arn_access" {
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ]
-        Resource = "${var.database_secret_arn}"
+        Resource = [
+          var.database_secret_arn,
+          aws_secretsmanager_secret.hashkey_secret.arn
+        ]
       }
     ]
   })

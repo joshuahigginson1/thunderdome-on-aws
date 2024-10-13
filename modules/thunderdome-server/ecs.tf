@@ -43,8 +43,8 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
-  cpu    = 1024 # 1 vCPU
-  memory = 2048 # 2GB RAM
+  cpu    = 512  # 0.5 vCPU
+  memory = 1024 # 1GB RAM
 
   runtime_platform {
     operating_system_family = "LINUX"
@@ -53,6 +53,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
 
   # NB: Container Definitions will vary massively from deployment to deployment. You will want to edit this section by hand.
   container_definitions = jsonencode([
+
+    # ====================== #
+    #   Application Server   #
+    # ====================== #
+
     {
       name = "thunderdome-server"
 
@@ -70,6 +75,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       # Add / Alter secrets and app configuration via Environment Variables here.
 
       secrets = [
+
+        # -------------------- #
+        #   Database Secrets   #
+        # -------------------- #
+
         {
           name      = "DB_USER",
           valueFrom = "${var.database_secret_arn}:username::"
@@ -77,20 +87,54 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           name      = "DB_PASS",
           valueFrom = "${var.database_secret_arn}:password::"
+        },
+
+        # ----------------------- #
+        #   Application Secrets   #
+        # ----------------------- #
+
+        {
+          name      = "COOKIE_HASHKEY",
+          valueFrom = "${aws_secretsmanager_secret.hashkey_secret.arn}:cookie_hashkey::"
+        },
+        {
+          name      = "CONFIG_AES_HASHKEY",
+          valueFrom = "${aws_secretsmanager_secret.hashkey_secret.arn}:aes_hashkey::"
         }
       ]
 
-      # TODO: Configure app.
       # Config found here: https://github.com/StevenWeathers/thunderdome-planning-poker/blob/main/docs/CONFIGURATION.md
       environment = [
+
+        # ----------------------------- #
+        #   Application Configuration   #
+        # ----------------------------- #
+
+        {
+          name  = "APP_DOMAIN",
+          value = aws_route53_record.application_entry.fqdn
+        },
         {
           name  = "ADMIN_EMAIL",
           value = "${var.thunderdome_administrator_email}"
         },
         {
           name  = "SMTP_ENABLED",
-          value = "false" # Disable SMTP, currently not configured.
+          value = "false" # Disable SMTP, we don't want to be sending emails to users.
         },
+        {
+          name  = "CONFIG_ALLOW_EXTERNAL_API",
+          value = "false" # Disable External API for my deployment. I'm not certainly not using it.
+        },
+        {
+          name  = "CONFIG_CLEANUP_GUESTS_DAYS_OLD",
+          value = "7"
+        },
+
+        # -------------------------- #
+        #   Database Configuration   #
+        # -------------------------- #
+
         {
           name  = "DB_NAME",
           value = "${var.database_name}"
@@ -99,10 +143,24 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           name  = "DB_HOST",
           value = "${var.database_endpoint}"
         },
+        # TODO: Configure SSL on DB Connection - Requires custom container to mount certificate.
+        # {
+        #   name  = "DB_SSLMODE",
+        #   value = "verify-full"
+        # },
+
+        # -------------------------------- #
+        #   Monitoring and Observability   #
+        # -------------------------------- #
+
         {
-          name  = "ANALYTICS_ENABLED",
-          value = "false"
-        } # TODO: Can we configure Matomo here?
+          name  = "OTEL_ENABLED",
+          value = "true"
+        },
+        {
+          name  = "OTEL_INSECURE_MODE",
+          value = "true" # TODO: Secure.
+        }
       ]
 
       # -------------------- #
@@ -145,6 +203,41 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           awslogs-group         = aws_cloudwatch_log_group.log_group.name
           awslogs-region        = data.aws_region.current.name
           awslogs-stream-prefix = "thunderdome-server"
+        }
+      }
+    },
+
+    # ================== #
+    #   OTEL Collector   #
+    # ================== #
+
+    # Collects OpenTelemetry information from the container and feeds it to AWS XRay.
+    {
+      name      = "aws-otel-collector"
+      image     = "public.ecr.aws/aws-observability/aws-otel-collector:v0.41.0"
+      essential = true
+      user      = "aoc"
+
+      entryPoint = [
+        "/awscollector",
+        "--config=/etc/otel-config.yaml"
+      ]
+
+      healthCheck = {
+        command = [
+          "/healthcheck"
+        ],
+        startPeriod = 10
+      }
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.log_group.name
+          mode                  = "non-blocking"
+          max-buffer-size       = "25m"
+          awslogs-region        = data.aws_region.current.name
+          awslogs-stream-prefix = "otel-collector"
         }
       }
     }
