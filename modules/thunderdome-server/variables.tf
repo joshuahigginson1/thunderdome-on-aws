@@ -172,13 +172,7 @@ variable "thunderdome_administrator_email" {
 #   Route 53 Configuration   #
 # ========================== #
 
-variable "load_balancer_certificate_arn" {
+variable "hosted_zone_id" {
   type        = string
-  description = "(Required) the ARN to the HTTPS Certificate required for securing our Load Balancer Listener, stored within AWS Certificate Manager. Must be created manually."
-
-  validation {
-    # TODO: Tweak this regex to allow for different AWS partitions.
-    condition     = can(regex("^arn:aws:acm::[0-9]{12}:certificate/[a-zA-Z0-9-_/]+$", var.load_balancer_certificate_arn))
-    error_message = "Invalid certificate ARN provided. It should be an ACM certificate ARN (arn:<Your AWS Partition>:acm::<Account ID>:certificate/<Secret Name>)."
-  }
+  description = "(Required) The Hosted Zone ID for the Hosted Zone to which the application's DNS will be added to."
 }

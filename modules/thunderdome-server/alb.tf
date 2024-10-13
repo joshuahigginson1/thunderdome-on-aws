@@ -32,7 +32,7 @@ resource "aws_lb_listener" "application_listener" {
   protocol          = "HTTPS"
 
   ssl_policy      = "ELBSecurityPolicy-2016-08"
-  certificate_arn = var.load_balancer_certificate_arn
+  certificate_arn = aws_acm_certificate.lb_certificate.arn
 
   default_action {
     type             = "forward"
