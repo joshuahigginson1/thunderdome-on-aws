@@ -5,7 +5,7 @@
 # =================== #
 
 resource "aws_secretsmanager_secret" "oidc_secret" {
-  name_prefix        = "${var.project_prefix}-oidc-secret"
+  name_prefix = "${var.project_prefix}-oidc-secret"
   description = "An AWS Secrets Manager Secret, storing the OIDC secrets for Thunderdome."
 
   recovery_window_in_days = var.deletion_protection ? 30 : 0
@@ -51,7 +51,7 @@ resource "aws_secretsmanager_secret_policy" "oidc_secret_policy" {
 resource "aws_secretsmanager_secret_version" "oidc_secret_version" {
   secret_id = aws_secretsmanager_secret.oidc_secret.id
   secret_string = jsonencode({
-    client_id     = "TODO"  # TODO: Not currently possible to add custom OIDC outside of google.
+    client_id     = "TODO" # TODO: Not currently possible to add custom OIDC outside of google.
     client_secret = "TODO"
   })
 }

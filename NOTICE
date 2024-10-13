@@ -1,0 +1,21 @@
+# NOTICE
+
+This repository contains explicitly the *deployment code*, and not the source code, for the application Thunderdome Planning Poker, written by Stephen Weathers and contributors under the Apache Licence, Version 2.0 (the "License").
+
+The *deployment code* in this repository is licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0
+
+Please note:
+
+The *source code* for Thunderdome Planning Poker itself is **NOT** included in this repository.
+
+Thunderdome Planning Poker is separately licensed under the Apache License, Version 2.0 by its original authors.
+
+This *deployment code* is provided "as is", without warranty of any kind, express or implied.
+
+For more information about Thunderdome Planning Poker, please send some love their way:
+
+- https://github.com/StevenWeathers/thunderdome-planning-poker
+- https://thunderdome.dev/
+
+
+Copyright 2024 Joshua Higginson
